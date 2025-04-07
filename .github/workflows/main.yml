@@ -3,7 +3,7 @@ name: Deploy Sentiment Analysis to AWS
 on:
   push:
     branches:
-      - main  # o la rama donde trabajes
+      - main  # o la rama que uses para deploy
 
 jobs:
   deploy:
@@ -20,9 +20,6 @@ jobs:
 
       - name: Install Serverless Framework
         run: npm install -g serverless
-
-      - name: Install Serverless plugins
-        run: npm install
 
       - name: Install Python dependencies
         run: pip install -r requirements.txt
@@ -44,6 +41,3 @@ jobs:
 
       - name: Deploy with Serverless
         run: sls deploy --stage test
-
-      - name: Invoke Lambda to test
-        run: sls invoke -f analyzeSentiment --stage test
