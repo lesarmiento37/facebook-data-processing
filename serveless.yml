@@ -1,0 +1,72 @@
+service: sentiment-analysis
+frameworkVersion: '3'
+useDotenv: true
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-python-requirements
+  - serverless-plugin-log-retention
+  - serverless-plugin-tracing
+  - serverless-prune-plugin
+
+custom:
+  prune:
+    automatic: true
+    includeLayers: true
+    number: ${env:PRUNE_NUMBER, 3}
+
+  pythonRequirements:
+    dockerizePip: true
+    useStaticCache: false
+
+  serviceTags:
+    Project: 'SentimentAnalysis'
+    Team: 'Data'
+    Country: 'Colombia'
+    Owner: 'Leonardo'
+
+  dotenv:
+    include:
+      - REGION
+      - TIMEOUT
+      - LOGS_RETENTION_DAYS
+      - INPUT_FILE
+      - OUTPUT_FILE
+
+provider:
+  name: aws
+  runtime: python3.11
+  region: ${env:REGION, 'us-east-1'}
+  stage: ${opt:stage, 'dev'}
+  memorySize: 512
+  timeout: ${env:TIMEOUT, 30}
+  logRetentionInDays: ${env:LOGS_RETENTION_DAYS, 7}
+  tracing:
+    lambda: true
+
+  environment:
+    BUCKET_NAME: ${self:service}-${sls:stage}-bucket
+    INPUT_FILE: ${env:INPUT_FILE}
+    OUTPUT_FILE: ${env:OUTPUT_FILE}
+
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - comprehend:DetectSentiment
+            - s3:GetObject
+            - s3:PutObject
+          Resource: "*"
+
+functions:
+  analyzeSentiment:
+    handler: handler.analyze
+    timeout: 30
+
+resources:
+  Resources:
+    SentimentAnalysisBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.BUCKET_NAME}
