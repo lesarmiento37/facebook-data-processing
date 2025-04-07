@@ -31,5 +31,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      - name: Prepare .env file
+        run: cp .env.test .env
+
       - name: Deploy with Serverless
         run: sls deploy --stage test
