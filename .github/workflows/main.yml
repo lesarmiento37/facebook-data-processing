@@ -34,5 +34,10 @@ jobs:
       - name: Prepare .env file
         run: cp .env.test .env
 
+      - name: Show current directory contents
+        run: |
+          pwd
+          ls -la
+
       - name: Deploy with Serverless
         run: sls deploy --stage test
