@@ -3,7 +3,7 @@ name: Deploy Sentiment Analysis to AWS
 on:
   push:
     branches:
-      - master  # o la rama que uses para deploy
+      - main  # o la rama que uses para deploy
 
 jobs:
   deploy:
